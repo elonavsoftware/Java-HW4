@@ -5,24 +5,22 @@ import food.EFoodType;
 import food.IEdible;
 
 /**
- * @author baroh
+ * Carnivore class
+ * @author Mahdi Asali
  *
  */
-public class Carnivore implements IDiet {
 
+public class Carnivore implements IDiet
+{
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see diet.IDiet#canEat(food.IFood)
 	 */
 	@Override
-	public boolean canEat(IEdible food) {
-		return (food.getFoodtype() == EFoodType.MEAT);
-	}
-	
-	public boolean canEat(EFoodType food_type) {
-		return food_type == EFoodType.MEAT;
-	}
+	public boolean canEat(IEdible food) { return (food.getFoodtype() == EFoodType.MEAT); }
+	public boolean canEat(EFoodType food_type) { return food_type == EFoodType.MEAT; }
 
 	/*
 	 * (non-Javadoc)
@@ -30,17 +28,14 @@ public class Carnivore implements IDiet {
 	 * @see diet.IDiet#eat(food.IFood)
 	 */
 	@Override
-	public boolean eat(Animal animal, IEdible food) {
+	public boolean eat(Animal animal, IEdible food)
+	{
 		boolean isSuccess = canEat(food);
-		if (isSuccess) {
+		if (isSuccess)
 			animal.setWeight(animal.getWeight() * 1.1);
-		}
 		return isSuccess;
 	}
 
 	@Override
-	public String toString() {
-		return "[" + this.getClass().getSimpleName() + "]";
-	}
-
-}
+	public String toString() { return "[" + this.getClass().getSimpleName() + "]"; }
+} //class Carnivore implements IDiet

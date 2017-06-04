@@ -5,10 +5,13 @@ import food.EFoodType;
 import food.IEdible;
 
 /**
- * @author baroh
+ * IDiet interface, for animals
+ * @author Elon Avisror
  *
  */
-public interface IDiet {
+
+public interface IDiet
+{
 
 	/**
 	 * @param food
@@ -23,5 +26,4 @@ public interface IDiet {
 	public boolean eat(Animal animal, IEdible food);
 	
 	public boolean canEat(EFoodType food_type);
-
-}
+} //interface IDiet

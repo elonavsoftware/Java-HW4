@@ -1,14 +1,18 @@
 package food;
 
 /**
- * @author baroh
+ * EIdible interface
+ * @author Elon Avisror
  *
  */
-public interface IEdible {
+
+public interface IEdible
+{
+	
 	/**
 	 * 
 	 * @return The food type for the object
 	 * @see EFoodType
 	 */
 	public EFoodType getFoodtype();
-}
+} //interface IEdible

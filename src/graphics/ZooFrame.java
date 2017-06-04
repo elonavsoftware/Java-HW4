@@ -4,12 +4,17 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * ZooFrame class, extends JFrame and implements ActionListener, the main frame of the zoo
+ * @author Elon Avisror
+ *
+ */
 
 public class ZooFrame extends JFrame implements ActionListener
 {
    private static final long serialVersionUID = 1L;
    private ZooPanel panel;
-   private String[] names = {"Exit","Image","Green","None","Help"};
+   private String[] names = {"Exit", "Image", "Green", "None", "Help"};
    private JMenu m1, m2, m3;
    private JMenuItem[] mi;
    private JMenuBar mb;
@@ -17,8 +22,8 @@ public class ZooFrame extends JFrame implements ActionListener
    public static void main(String[]args)
    {
 	   ZooFrame aqua = new ZooFrame();
-	   aqua.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-	   aqua.setSize(800,600);
+	   aqua.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	   aqua.setSize(800, 600);
 	   aqua.setVisible(true);
    }
 
@@ -35,9 +40,9 @@ public class ZooFrame extends JFrame implements ActionListener
 		m3 = new JMenu("Help");
 		mi = new JMenuItem[names.length];
 
-		for(int i=0;i<names.length;i++)
+		for(int i = 0; i < names.length; i++)
 		{
-		    mi[i]=new JMenuItem(names[i]);
+		    mi[i] = new JMenuItem(names[i]);
 		    mi[i].addActionListener(this);
 		}
 
@@ -57,7 +62,8 @@ public class ZooFrame extends JFrame implements ActionListener
 		setJMenuBar(mb);
    }
 
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e)
+	{
 		if(e.getSource() == mi[0])
 			destroy();
 		else if(e.getSource() == mi[1])
@@ -70,12 +76,6 @@ public class ZooFrame extends JFrame implements ActionListener
 			printHelp();
 	}
 	
-	public void destroy() {
-		panel.destroy();
-	}
-	
-	public void printHelp() {
-		JOptionPane.showMessageDialog(this, "Home Work 4\nGUI @ Threads");
-	}
-
-}
+	public void destroy() { panel.destroy(); }
+	public void printHelp() { JOptionPane.showMessageDialog(this, "Home Work 4\nGUI @ Threads"); }
+} //class ZooFrame extends JFrame implements ActionListener

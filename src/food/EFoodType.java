@@ -1,12 +1,13 @@
 package food;
 
 /**
- * enumeration of Food Types
- * 
- * @author baroh
+ * EFoodType interface, represent the types of food (MEAT/NOTFOOD/VEGETABLE)
+ * @author Mahdi Asali
  *
  */
-public enum EFoodType {
+
+public enum EFoodType
+{
 	/**
 	 * Meat - Most Animals
 	 */
@@ -19,4 +20,4 @@ public enum EFoodType {
 	 * Vegetables - Most Plants
 	 */
 	VEGETABLE
-}
+} //enum EFoodType

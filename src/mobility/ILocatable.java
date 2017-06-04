@@ -1,10 +1,14 @@
 package mobility;
 
 /**
- * @author baroh
+ * ILocatable interface
+ * @author Elon Avisror
  *
  */
-public interface ILocatable {
+
+public interface ILocatable
+{
+	
 	/**
 	 * @return the current location
 	 */
@@ -17,4 +21,4 @@ public interface ILocatable {
 	 * @return true if location is valid, false if not
 	 */
 	public boolean setLocation(Point location);
-}
+} //interface ILocatable

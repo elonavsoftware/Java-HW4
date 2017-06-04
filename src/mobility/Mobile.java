@@ -1,22 +1,19 @@
 package mobility;
 
 /**
- * @author baroh
+ * Mobile class which extends the ILocatable interface
+ * @author Mahdi Asali
  *
  */
-public abstract class Mobile implements ILocatable {
+
+public abstract class Mobile implements ILocatable
+{
 	protected Point location;
-
-	public Mobile(Point location) {
-		this.setLocation(location);
-	}
-	public Point getLocation() {
-		return location;
-	}
-
-	public boolean setLocation(Point newLocation) {
+	public Mobile(Point location) { this.setLocation(location); }
+	public Point getLocation() { return location; }
+	public boolean setLocation(Point newLocation)
+	{
 		this.location = newLocation;
 		return true;
-
 	}
-}
+} //abstract class Mobile implements ILocatable
