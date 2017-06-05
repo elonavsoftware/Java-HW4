@@ -40,7 +40,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    private EFoodType Food;
    private JPanel p1;
    private JButton[] b_num;
-   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Exit"};
+   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Decorate", "Duplicate", "Save state", "Restore state", "Exit"};
    private ArrayList<Animal> animals;
    private Plant forFood = null;
    private JScrollPane scrollPane;
@@ -71,7 +71,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		b_num = new JButton[names.length];
 		for(int i = 0; i < names.length; i++)
 		{
-		    b_num[i]=new JButton(names[i]);
+		    b_num[i] = new JButton(names[i]);
 		    b_num[i].addActionListener(this);
 		    b_num[i].setBackground(Color.lightGray);
 		    p1.add(b_num[i]);		
@@ -161,7 +161,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 
    public void addDialog()
    {
-	   if(animals.size()==MAX_ANIMAL_NUMBER)
+	   if(animals.size() == MAX_ANIMAL_NUMBER)
 		   JOptionPane.showMessageDialog(this, "You cannot add more than " + MAX_ANIMAL_NUMBER + " animals");
 	   else
 	   {
@@ -224,14 +224,14 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		   int n = JOptionPane.showOptionDialog(frame, "Please choose food", "Food for animals", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
 		   switch(n)
 		   {
-		   		case 0: // Meat
+		   		case 0: //Meat
 		   			Food = EFoodType.MEAT;
 		   			break;
-		   		case 1: // Cabbage
+		   		case 1: //Cabbage
 		   			Food = EFoodType.VEGETABLE;
 		   			forFood = new Cabbage(this);
 		   			break;
-		   		default: // Lettuce
+		   		default: //Lettuce
 		   			Food = EFoodType.VEGETABLE;
 		   			forFood = new Lettuce(this);
 		   			break;
@@ -274,9 +274,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 	      isTableVisible = true;
 	   }
 	   else
-	   {
 		   isTableVisible = false;
-	   }
 	   scrollPane.setVisible(isTableVisible);
        repaint();
    }
@@ -287,6 +285,26 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		  an.interrupt();
 	  controller.interrupt();
       System.exit(0);
+   }
+   
+   public void decorate()
+   {
+	   
+   }
+   
+   public void duplicate()
+   {
+	   
+   }
+   
+   public void saveState()
+   {
+	   
+   }
+   
+   public void restoreState()
+   {
+	   
    }
    
    public void actionPerformed(ActionEvent e)
@@ -303,7 +321,15 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		addFood();
 	else if(e.getSource() == b_num[5]) //Info
 		info();
-	else if(e.getSource() == b_num[6]) //Exit
+	else if(e.getSource() == b_num[6]) //Decorate
+		decorate();
+	else if(e.getSource() == b_num[7]) //Duplicate
+		duplicate();
+	else if(e.getSource() == b_num[8]) //Save state
+		saveState();
+	else if(e.getSource() == b_num[9]) //Restore state
+		restoreState();
+	else if(e.getSource() == b_num[10]) //Exit
 		destroy();
    }
 
