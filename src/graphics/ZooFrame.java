@@ -30,7 +30,8 @@ public class ZooFrame extends JFrame implements ActionListener
    public ZooFrame()
    {
 	    super("Zoo");
-	    panel = new ZooPanel(this);
+	    //panel = new ZooPanel(this);
+	    panel=ZooPanel.getInstance(this);
 	    add(panel);
 	    panel.setVisible(true);
 

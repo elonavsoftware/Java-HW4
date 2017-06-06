@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Future;
+
 import javax.imageio.ImageIO;
 import diet.IDiet;
 import food.EFoodType;
@@ -32,7 +34,7 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	protected int horSpeed;
 	protected int verSpeed;
 	protected boolean coordChanged;
-	protected Thread thread;
+	
 	protected int x_dir;
 	protected int y_dir;
 	protected int eatCount;
@@ -42,8 +44,8 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	protected int cor_x1, cor_x2, cor_x3, cor_x4, cor_x5, cor_x6;
 	protected int cor_y1, cor_y2, cor_y3, cor_y4, cor_y5, cor_y6;
 	protected int cor_w, cor_h;
-	
-	
+	protected boolean isRun= false;
+	protected Future task;
 	public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
 	{
 		super(new Point(0, 0));
@@ -61,7 +63,7 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
 		cor_w = cor_h = size;
 		coordChanged = false;
-		thread = new Thread(this);
+		
 	}	
 	
 	public EFoodType getFoodtype() { return EFoodType.MEAT;	}	
@@ -82,9 +84,18 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	synchronized public boolean getChanges(){ return coordChanged; }
 	synchronized public void setChanges(boolean state){ coordChanged = state; }	 
 	public String getColor() { return col; }
-	public void start() { thread.start(); }
-	public void interrupt() { thread.interrupt(); }
-	
+	//public void start() { thread.start(); }
+	public void interrupt() { 
+		  isRun = false;       // to stop thread of animal
+		   //notify();                 // this can help if an animal is in state “wait”
+		   task.cancel(true); // to remove thread of animal from Threadpool
+	}
+	public void setFuture(Future _task)
+	{
+		this.task=_task;
+	}
+	public boolean isRunning() { return isRun; }
+
 	public void loadImages(String nm)
 	{
 		 switch(getColor())
@@ -126,7 +137,8 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 
     public void run() 
     {
-       while (true) 
+    	isRun=true;
+       while (isRun) 
        {
     	   try 
            {

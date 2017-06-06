@@ -22,6 +22,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * ZooPanel class, extends JPanel and implements ActionListener, Runnable, the main panel of the zoo
@@ -49,8 +53,9 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    private BufferedImage img, img_m;
    private boolean bgr;
    private Thread controller;
-   
-   public ZooPanel(ZooFrame f)
+   Executor threadPool;
+   static private volatile ZooPanel instance=null;
+   private ZooPanel(ZooFrame f)
    {
 	    frame = f;
 	    Food = EFoodType.NOTFOOD;
@@ -98,6 +103,8 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		{
 			System.out.println("Cannot load meat");
 		}
+		threadPool = Executors.newFixedThreadPool(5);
+		
    }		
 
    public void paintComponent(Graphics g)
@@ -184,7 +191,9 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 	   else 
 		   an = new Giraffe(sz, 0, 0, hor, ver, c, this);
 	   animals.add(an);
-	   an.start();
+	   Future<?> task = ((ExecutorService)threadPool).submit(an);
+	   an.setFuture(task);
+	   //an.start();
    }
 
 	public void start()
@@ -201,14 +210,20 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 
    synchronized public void clear()
    {
-	   for(Animal an : animals)
-	    an.interrupt();
-	   animals.clear();
+	   int j=animals.size();
+	   for(int i =0; i <j;i++){
+		   for(Animal an : animals){
+			   if(an.isRunning()){
+				   an.interrupt();
+				   animals.remove(an);
+				   break;}} 
+	   }
 	   Food = EFoodType.NOTFOOD;
 	   forFood = null;
 	   totalCount = 0;
 	   repaint();
    }
+
 
    synchronized public void preyEating(Animal predator, Animal prey)
    {
@@ -361,4 +376,18 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 	    }
 		return rc;
 	}
+	
+    public static ZooPanel getInstance(ZooFrame f){
+	
+    	if(instance ==null)
+    		synchronized(ZooPanel.class)
+    		{
+    			if(instance==null)
+    				instance=new ZooPanel(f);
+    		}
+    	return instance;
+    }	
+	
+	
+	
 } //class ZooPanel extends JPanel implements ActionListener, Runnable
