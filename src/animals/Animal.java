@@ -46,7 +46,27 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	protected int cor_w, cor_h;
 	protected boolean isRun= false;
 	protected Future task;
-	public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
+	public Animal()
+	{
+		super(new Point(0,0));
+	}
+	public void init(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p){
+		name = new String(nm);
+		size = sz;
+		weight = w;
+		horSpeed = hor;
+		verSpeed = ver;
+		col = c;
+		pan = p;
+		x_dir = 1;
+		y_dir = 1;
+		cor_x1 = cor_x3 = cor_x5 = cor_x6 = 0;
+		cor_y1 = cor_y3 = cor_y5 = cor_y6 = 0;
+		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
+		cor_w = cor_h = size;
+		coordChanged = false;
+	}
+	/*public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
 	{
 		super(new Point(0, 0));
 		name = new String(nm);
@@ -64,7 +84,7 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 		cor_w = cor_h = size;
 		coordChanged = false;
 		
-	}	
+	}	*/
 	
 	public EFoodType getFoodtype() { return EFoodType.MEAT;	}	
 	public IDiet getDiet() { return diet; }
@@ -82,7 +102,8 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	synchronized public void setSuspend() { threadSuspended = true; }
 	synchronized public void setResume() { threadSuspended = false; notify(); }
 	synchronized public boolean getChanges(){ return coordChanged; }
-	synchronized public void setChanges(boolean state){ coordChanged = state; }	 
+	synchronized public void setChanges(boolean state){ coordChanged = state; }	
+	abstract public void setter(int s,int x, int y, int h, int v, String c, ZooPanel p);
 	public String getColor() { return col; }
 	//public void start() { thread.start(); }
 	public void interrupt() { 
@@ -248,4 +269,5 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
     {
     	return "[" + getName() + ": weight=" + weight + ", color =" + col + "]";
     }
+
 } //abstract class Animal extends Mobile implements IEdible, IDrawable, IAnimalBehavior, Runnable

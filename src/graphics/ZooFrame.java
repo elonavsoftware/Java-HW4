@@ -30,9 +30,9 @@ public class ZooFrame extends JFrame implements ActionListener
    public ZooFrame()
    {
 	    super("Zoo");
-	    //panel = new ZooPanel(this);
 	    panel=ZooPanel.getInstance(this);
 	    add(panel);
+	    
 	    panel.setVisible(true);
 
 		mb = new JMenuBar();
@@ -61,7 +61,8 @@ public class ZooFrame extends JFrame implements ActionListener
 		mb.add(m2);
 		mb.add(m3);
 		setJMenuBar(mb);
-   }
+	    
+	 }
 
 	public void actionPerformed(ActionEvent e)
 	{

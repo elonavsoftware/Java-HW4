@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import Factory.AbstractZooFactory;
 import animals.Animal;
 import animals.Bear;
 import animals.Elephant;
@@ -54,6 +55,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    private boolean bgr;
    private Thread controller;
    Executor threadPool;
+   AbstractZooFactory factory;
    static private volatile ZooPanel instance=null;
    private ZooPanel(ZooFrame f)
    {
@@ -168,28 +170,37 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 
    public void addDialog()
    {
+	   String type;
 	   if(animals.size()==MAX_ANIMAL_NUMBER)
 		   JOptionPane.showMessageDialog(this, "You cannot add more than " + MAX_ANIMAL_NUMBER + " animals");
 	   else
 	   {
-		   AddAnimalDialog dial = new AddAnimalDialog(this, "Add an animal to aquarium");
+		  type= showFactoryDialog();
+		   AddAnimalDialog dial = new AddAnimalDialog(this, "Add an animal to aquarium",type);
 		   dial.setVisible(true);
 	   }
    }
-   
-   public void addAnimal(String animal, int sz, int hor, int ver, String c)
+   public String showFactoryDialog(){
+	   Object[] options = {"Herbivore", "Omnivore", "Carnivore"}; 
+	   int n = JOptionPane.showOptionDialog(frame, "Please choose animal factory", "Animal factory", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+	   switch(n)
+	   {
+	   		case 0:
+	   			factory=AbstractZooFactory.createAnimalFactory("Plant");
+	   			return "Plant";
+	   		case 1: // Cabbage
+	   			factory=AbstractZooFactory.createAnimalFactory("Mix");
+	   			return "Mix";
+	   		default: // Lettuce
+	   			factory=AbstractZooFactory.createAnimalFactory("Meat");
+	   			return "Meat";
+	   }
+   }
+   @SuppressWarnings("null")
+public void addAnimal(String animal, int sz, int hor, int ver, String c)
    {
-	   Animal an = null;
-	   if(animal.equals("Elephant"))
-		   an = new Elephant(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Lion"))
-		   an = new Lion(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Turtle")) 
-		   an = new Turtle(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Bear"))
-		   an = new Bear(sz, 0, 0, hor, ver, c, this);
-	   else 
-		   an = new Giraffe(sz, 0, 0, hor, ver, c, this);
+	   Animal an = factory.produceAnimal(animal);
+	   an.setter(sz, 0, 0, hor, ver, c, this);
 	   animals.add(an);
 	   Future<?> task = ((ExecutorService)threadPool).submit(an);
 	   an.setFuture(task);
