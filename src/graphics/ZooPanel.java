@@ -8,12 +8,16 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import Factory.AbstractZooFactory;
+import ZooObserverPackage.ZooObserver;
 import animals.Animal;
 import animals.Bear;
 import animals.Elephant;
 import animals.Giraffe;
 import animals.Lion;
 import animals.Turtle;
+import decoration.DecorateDialog;
+import decoration.decorator;
+import duplication.DuplicateDialog;
 import food.EFoodType;
 import plants.Cabbage;
 import plants.Lettuce;
@@ -28,13 +32,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+
+
 /**
  * ZooPanel class, extends JPanel and implements ActionListener, Runnable, the main panel of the zoo
  * @author Elon Avisror
  *
  */
 
-public class ZooPanel extends JPanel implements ActionListener, Runnable
+public class ZooPanel extends JPanel implements ActionListener
 {
    private static final long serialVersionUID = 1L;
    private static final int MAX_ANIMAL_NUMBER  = 10;
@@ -45,29 +51,33 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    private EFoodType Food;
    private JPanel p1;
    private JButton[] b_num;
-   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Exit"};
-   private ArrayList<Animal> animals;
+   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Exit","Decorate","Duplicate"};
+   //private String[] names2 = {"Decorate", "Test1", "Test2", "Test3", "Test4", "Test4", "Test5","Test6"};
+
+   protected ArrayList<Animal> animals;
    private Plant forFood = null;
    private JScrollPane scrollPane;
    private boolean isTableVisible;
    private int totalCount;
    private BufferedImage img, img_m;
    private boolean bgr;
-   private Thread controller;
    Executor threadPool;
    AbstractZooFactory factory;
+   ZooObserver Controller;
    static private volatile ZooPanel instance=null;
    private ZooPanel(ZooFrame f)
    {
-	    frame = f;
+	   Controller = new ZooObserver(this);
+	   Controller.start();
+	   
+	   frame = f;
 	    Food = EFoodType.NOTFOOD;
 	    totalCount = 0;
 	    isTableVisible = false;
 	    
+	    
 	    animals = new ArrayList<Animal>();
 
-	    controller = new Thread(this);
-	    controller.start();	    
 	   
 	    setBackground(new Color(255, 255, 255));
 	    
@@ -168,6 +178,9 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		   System.out.println("The " + an.getName() + " with " + an.getColor() + " color and size " + an.getSize() + " missed food.");
    }
 
+   public ArrayList getAnimals(){
+	   return animals;
+   }
    public void addDialog()
    {
 	   String type;
@@ -204,9 +217,17 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 	   animals.add(an);
 	   Future<?> task = ((ExecutorService)threadPool).submit(an);
 	   an.setFuture(task);
+	   an.addObserver(this.Controller);
 	   //an.start();
    }
-
+   public void addAnimal(Animal animal)
+   {
+	   if(animals.size()>5){animal.setRun(false);} //fixing the option that if animal in wait mode and boolean isRun equal's to true , then when you trying to "Clear" , it's will clear them instead of resuming "FALSE" one.
+	   animals.add(animal);
+	   Future<?> task = ((ExecutorService)threadPool).submit(animal);
+	   animal.setFuture(task);
+	   animal.addObserver(this.Controller);
+   }
 	public void start()
 	{
 	    for(Animal an : animals)
@@ -311,7 +332,7 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
    { 
 	  for(Animal an : animals)
 		  an.interrupt();
-	  controller.interrupt();
+	  //controller.interrupt();
       System.exit(0);
    }
    
@@ -331,9 +352,55 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		info();
 	else if(e.getSource() == b_num[6]) //Exit
 		destroy();
+	else if(e.getSource()==b_num[7])
+		checkDecorate();
+	else if(e.getSource()==b_num[8]){
+		new DuplicateDialog (this).setVisible(true);
+	}
    }
+   public void fillComboBox(JComboBox list, String text){
 
-	public void run()
+	   if(text=="Natural"){
+	   	for(int i=0;i<animals.size();i++){
+	   		if(text=="Natural"){
+			list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
+	     	}
+	   }
+	   else if (text=="All")
+	   {
+		   	for(int i=0;i<animals.size();i++){
+				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
+		     	
+	   }
+   }
+   public Animal getAnimal(int index){
+	   if(index>=0){return animals.get(index);}
+	   else return null;
+   }
+   
+   
+   public void checkDecorate(){
+	   boolean flag=false;
+	   for(Animal an : animals)
+	   {
+		   if(an.getColor()=="Natural")
+			   flag=true;	//at least one animal that can be decorated.		   
+	   }
+	   if(flag==true){
+		   //open dialog.
+		   //DecorateDialog dDialog=new DecorateDialog(this,"Decorate an animal");
+		   //dDialog.setVisible(true);
+		    
+		   decorator dDialog=new decorator(this);
+		   dDialog.setVisible(true);
+
+	   }
+	   else{
+		   JOptionPane.showMessageDialog(this, "You have not animals for decoration");
+
+	   }
+   }
+	/*public void run()
 	{
 		while(true)
 		{
@@ -372,7 +439,7 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 				return;
 			}
 		}
-	}
+	}*/
 
 	public boolean isChange()
 	{
@@ -387,7 +454,29 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 	    }
 		return rc;
 	}
-	
+	public void eatAn(){
+		boolean prey_eaten = false;
+		synchronized(this) {
+			for(Animal predator : animals) {
+				for(Animal prey : animals) {
+					if(predator != prey && predator.getDiet().canEat(prey) && predator.getWeight()/prey.getWeight() >= 2 &&
+					   (Math.abs(predator.getLocation().getX() - prey.getLocation().getX()) < prey.getSize()) &&
+					   (Math.abs(predator.getLocation().getY() - prey.getLocation().getY()) < prey.getSize())) {
+							preyEating(predator,prey);
+							System.out.print("The "+predator+" cought up the "+prey+" ==> ");
+							prey.interrupt();
+							animals.remove(prey);
+							repaint();
+							//JOptionPane.showMessageDialog(frame, ""+prey+" killed by "+predator);
+							prey_eaten = true;
+							break;
+					}
+				}
+				if(prey_eaten)
+					break;
+			}
+		}
+	} 
     public static ZooPanel getInstance(ZooFrame f){
 	
     	if(instance ==null)

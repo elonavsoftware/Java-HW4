@@ -4,9 +4,12 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
 import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
+
+import decoration.ColoredAnimal;
 import diet.IDiet;
 import food.EFoodType;
 import food.IEdible;
@@ -22,7 +25,7 @@ import mobility.Point;
  *
  */
 
-public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnimalBehavior, Runnable
+public abstract class Animal extends Observable implements Cloneable, IEdible,ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
 {
 
 	protected final int EAT_DISTANCE = 5;
@@ -46,9 +49,22 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	protected int cor_w, cor_h;
 	protected boolean isRun= false;
 	protected Future task;
+	protected Point location;
 	public Animal()
 	{
-		super(new Point(0,0));
+		this.location=new Point(0,0);
+		//super(new Point(0,0));
+	}
+	
+	public Point getLocation() { return location; }
+	public boolean setLocation(Point newLocation)
+	{
+		this.location = newLocation;
+		return true;
+	}
+	
+	public void setRun(boolean res){
+		this.isRun=res;
 	}
 	public void init(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p){
 		name = new String(nm);
@@ -64,6 +80,7 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 		cor_y1 = cor_y3 = cor_y5 = cor_y6 = 0;
 		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
 		cor_w = cor_h = size;
+		
 		coordChanged = false;
 	}
 	/*public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
@@ -103,6 +120,7 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 	synchronized public void setResume() { threadSuspended = false; notify(); }
 	synchronized public boolean getChanges(){ return coordChanged; }
 	synchronized public void setChanges(boolean state){ coordChanged = state; }	
+
 	abstract public void setter(int s,int x, int y, int h, int v, String c, ZooPanel p);
 	public String getColor() { return col; }
 	//public void start() { thread.start(); }
@@ -116,7 +134,15 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 		this.task=_task;
 	}
 	public boolean isRunning() { return isRun; }
-
+	
+	//added method setColor at 05:24 7/6/17 by @Mahdi Asali
+	public void setColor(String _col){this.col=_col;}
+	
+	
+	//didnt understand why to add this?!?!?
+	@Override
+	public void PaintAnimal(String color) {
+	}
 	public void loadImages(String nm)
 	{
 		 switch(getColor())
@@ -252,11 +278,23 @@ public abstract class Animal extends Mobile implements IEdible, IDrawable, IAnim
 		    	if(cor_y4 != -1)
 		    		location.setY(cor_y4);
 		    }
-
- 		    setChanges(true);
+ 		    //setChanges(true);		    
+ 		    this.setChanged();
+ 		    this.notifyObservers();
+ 		    
       }
    }
- 
+    
+    public Object clone() {
+        Object clone = null;
+        try {
+           clone = super.clone();
+        } catch (CloneNotSupportedException e) {
+           e.printStackTrace();
+        }
+        return clone;
+     }
+    
     public void drawObject(Graphics g)
     {
  		if(x_dir == 1) //an animal goes to right side
