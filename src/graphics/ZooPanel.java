@@ -114,7 +114,6 @@ public class ZooPanel extends JPanel implements ActionListener
 		MainMenu.add(p1);
 		MainMenu.add(p2);
 		setLayout(new BorderLayout());
-		//add("South", p1);
 		add("South", MainMenu);
 
 		img = img_m = null;
