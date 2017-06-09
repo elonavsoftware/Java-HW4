@@ -358,21 +358,21 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		new DuplicateDialog (this).setVisible(true);
 	}
    }
+   
+   
+   //this function fill the combo box with the existing animals  , becuase two classes using same function we are seperate them, for example animal can be decorated just if it's color "Natural".
    public void fillComboBox(JComboBox list, String text){
-
 	   if(text=="Natural"){
 	   	for(int i=0;i<animals.size();i++){
-	   		if(text=="Natural"){
+	   		if(animals.get(i).getColor()=="Natural"){	   			
 			list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
 	     	}
 	   }
-	   else if (text=="All")
-	   {
+	   else if (text=="All"){
 		   	for(int i=0;i<animals.size();i++){
-				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
-		     	
-	   }
+				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}	     	 }
    }
+   
    public Animal getAnimal(int index){
 	   if(index>=0){return animals.get(index);}
 	   else return null;
