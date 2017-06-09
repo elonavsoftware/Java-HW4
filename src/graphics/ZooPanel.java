@@ -50,9 +50,9 @@ public class ZooPanel extends JPanel implements ActionListener
    private ZooFrame frame;
    private EFoodType Food;
    private JPanel p1;
-   private JButton[] b_num;
-   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Exit","Decorate","Duplicate"};
-   //private String[] names2 = {"Decorate", "Test1", "Test2", "Test3", "Test4", "Test4", "Test5","Test6"};
+   private JButton[] b_num,b_num2;
+   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info"};
+   private String[] names2 = {"Decorate", "Duplicate", "Save state", "Restore state", "Exit"};
 
    protected ArrayList<Animal> animals;
    private Plant forFood = null;
@@ -70,6 +70,10 @@ public class ZooPanel extends JPanel implements ActionListener
 	   Controller = new ZooObserver(this);
 	   Controller.start();
 	   
+	   //main panel for menus
+	   JPanel MainMenu= new JPanel(new GridLayout(2,1));
+	   
+	   
 	   frame = f;
 	    Food = EFoodType.NOTFOOD;
 	    totalCount = 0;
@@ -82,21 +86,37 @@ public class ZooPanel extends JPanel implements ActionListener
 	    setBackground(new Color(255, 255, 255));
 	    
 	    p1 = new JPanel();
+	    JPanel p2=new JPanel();
+	    
 		p1.setLayout(new GridLayout(1, 7, 0, 0));
 		p1.setBackground(new Color(0, 150, 255));
-
+		
+		p2.setLayout(new GridLayout(1, 7, 0, 0));
+		p2.setBackground(new Color(0, 150, 255));		
+		
 		b_num = new JButton[names.length];
+		b_num2= new JButton[names2.length];
 		for(int i = 0; i < names.length; i++)
 		{
 		    b_num[i]=new JButton(names[i]);
 		    b_num[i].addActionListener(this);
 		    b_num[i].setBackground(Color.lightGray);
-		    p1.add(b_num[i]);		
+		    p1.add(b_num[i]);				   
 		}
-
-		setLayout(new BorderLayout());
-		add("South", p1);
+		for(int i = 0; i < names2.length; i++)
+		{
+		    b_num2[i]=new JButton(names2[i]);
+		    b_num2[i].addActionListener(this);
+		    b_num2[i].setBackground(Color.lightGray);
+		    p2.add(b_num2[i]);				   
+		}		
 		
+		MainMenu.add(p1);
+		MainMenu.add(p2);
+		setLayout(new BorderLayout());
+		//add("South", p1);
+		add("South", MainMenu);
+
 		img = img_m = null;
 		bgr = false;
 		try
@@ -350,13 +370,19 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		addFood();
 	else if(e.getSource() == b_num[5]) //Info
 		info();
-	else if(e.getSource() == b_num[6]) //Exit
-		destroy();
-	else if(e.getSource()==b_num[7])
+	else if(e.getSource()==b_num2[0]){
 		checkDecorate();
-	else if(e.getSource()==b_num[8]){
+	}
+	else if(e.getSource()==b_num2[1]){
 		new DuplicateDialog (this).setVisible(true);
 	}
+	else if(e.getSource()==b_num2[2]){	
+	}
+	else if(e.getSource()==b_num2[3]){		
+	}	
+	else if(e.getSource()==b_num2[4]){
+		destroy();
+	}		
    }
    
    
@@ -387,10 +413,7 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 			   flag=true;	//at least one animal that can be decorated.		   
 	   }
 	   if(flag==true){
-		   //open dialog.
-		   //DecorateDialog dDialog=new DecorateDialog(this,"Decorate an animal");
-		   //dDialog.setVisible(true);
-		    
+		   //open dialog.   
 		   decorator dDialog=new decorator(this);
 		   dDialog.setVisible(true);
 
