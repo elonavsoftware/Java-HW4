@@ -19,18 +19,27 @@ public class AddAnimalDialog extends JDialog implements ItemListener, ActionList
     private JSlider sl_sz, sl_hor, sl_ver;
     private ButtonGroup rbg, rbg1;
     private String[] colors = {"Natural", "Red", "Blue"};
-    private String[] animals = {"Elephant", "Lion","Giraffe", "Turtle", "Bear"};
+    private String[] animals;
+    //, "Elephant""Lion","Giraffe", "Turtle", "Bear"};
     private String chosenAnimal;
     private String c;
     private JRadioButton[] rb;
     private JRadioButton[] rb1;
     private ZooPanel ap;
- 
-    public AddAnimalDialog(ZooPanel pan, String title)
+    private String type;
+    public AddAnimalDialog(ZooPanel pan, String title,String _type)
     {
     	super(new JFrame(), title,true);
+    	
+    	
+    	//init array of animals
+    	if (_type=="Meat")
+    		animals=new String[]{"Lion"};
+    	else if(_type == "Mix")
+    		animals=new String[]{"Bear"};
+    	else 
+    		animals = new String[]{"Elephant","Giraffe", "Turtle"};
     	ap = pan;
-
     	setSize(550,300);
 	
 		setBackground(new Color(100, 230, 255));

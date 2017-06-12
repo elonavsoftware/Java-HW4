@@ -7,12 +7,20 @@ import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import Factory.AbstractZooFactory;
+import Memento.Caretaker;
+import Memento.CopyZooPanel;
+import Memento.originator;
+import ZooObserverPackage.ZooObserver;
 import animals.Animal;
 import animals.Bear;
 import animals.Elephant;
 import animals.Giraffe;
 import animals.Lion;
 import animals.Turtle;
+import decoration.DecorateDialog;
+import decoration.decorator;
+import duplication.DuplicateDialog;
 import food.EFoodType;
 import plants.Cabbage;
 import plants.Lettuce;
@@ -22,6 +30,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+
 
 /**
  * ZooPanel class, extends JPanel and implements ActionListener, Runnable, the main panel of the zoo
@@ -29,7 +43,7 @@ import java.util.*;
  *
  */
 
-public class ZooPanel extends JPanel implements ActionListener, Runnable
+public class ZooPanel extends JPanel implements ActionListener
 {
    private static final long serialVersionUID = 1L;
    private static final int MAX_ANIMAL_NUMBER  = 10;
@@ -39,47 +53,76 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    private ZooFrame frame;
    private EFoodType Food;
    private JPanel p1;
-   private JButton[] b_num;
-   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info", "Decorate", "Duplicate", "Save state", "Restore state", "Exit"};
-   private ArrayList<Animal> animals;
+   private JButton[] b_num,b_num2;
+   private String[] names = {"Add Animal", "Sleep", "Wake up", "Clear", "Food", "Info"};
+   private String[] names2 = {"Decorate", "Duplicate", "Save state", "Restore state", "Exit"};
+
+   protected ArrayList<Animal> animals;
    private Plant forFood = null;
    private JScrollPane scrollPane;
    private boolean isTableVisible;
    private int totalCount;
    private BufferedImage img, img_m;
    private boolean bgr;
-   private Thread controller;
-   
-   public ZooPanel(ZooFrame f)
+   Executor threadPool;
+   AbstractZooFactory factory;
+   ZooObserver Controller;
+   static private volatile ZooPanel instance=null;
+   private  Caretaker caretaker;
+   private  originator originator;
+   private CopyZooPanel food_animals;
+   private Future<?> task;
+   private ZooPanel(ZooFrame f)
    {
-	    frame = f;
+	   Controller = new ZooObserver(this);
+	   Controller.start();
+	   
+	   //main panel for menus
+	   JPanel MainMenu= new JPanel(new GridLayout(2,1));
+	   
+	   
+	   frame = f;
 	    Food = EFoodType.NOTFOOD;
 	    totalCount = 0;
 	    isTableVisible = false;
 	    
+	    
 	    animals = new ArrayList<Animal>();
 
-	    controller = new Thread(this);
-	    controller.start();	    
 	   
 	    setBackground(new Color(255, 255, 255));
 	    
 	    p1 = new JPanel();
+	    JPanel p2=new JPanel();
+	    
 		p1.setLayout(new GridLayout(1, 7, 0, 0));
 		p1.setBackground(new Color(0, 150, 255));
-
+		
+		p2.setLayout(new GridLayout(1, 7, 0, 0));
+		p2.setBackground(new Color(0, 150, 255));		
+		
 		b_num = new JButton[names.length];
+		b_num2= new JButton[names2.length];
 		for(int i = 0; i < names.length; i++)
 		{
-		    b_num[i] = new JButton(names[i]);
+		    b_num[i]=new JButton(names[i]);
 		    b_num[i].addActionListener(this);
 		    b_num[i].setBackground(Color.lightGray);
-		    p1.add(b_num[i]);		
+		    p1.add(b_num[i]);				   
 		}
-
-		setLayout(new BorderLayout());
-		add("South", p1);
+		for(int i = 0; i < names2.length; i++)
+		{
+		    b_num2[i]=new JButton(names2[i]);
+		    b_num2[i].addActionListener(this);
+		    b_num2[i].setBackground(Color.lightGray);
+		    p2.add(b_num2[i]);				   
+		}		
 		
+		MainMenu.add(p1);
+		MainMenu.add(p2);
+		setLayout(new BorderLayout());
+		add("South", MainMenu);
+
 		img = img_m = null;
 		bgr = false;
 		try
@@ -98,6 +141,8 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		{
 			System.out.println("Cannot load meat");
 		}
+		threadPool = Executors.newFixedThreadPool(5);
+		
    }		
 
    public void paintComponent(Graphics g)
@@ -159,34 +204,56 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		   System.out.println("The " + an.getName() + " with " + an.getColor() + " color and size " + an.getSize() + " missed food.");
    }
 
+   public ArrayList getAnimals(){
+	   return animals;
+   }
    public void addDialog()
    {
-	   if(animals.size() == MAX_ANIMAL_NUMBER)
+	   String type;
+	   if(animals.size()==MAX_ANIMAL_NUMBER)
 		   JOptionPane.showMessageDialog(this, "You cannot add more than " + MAX_ANIMAL_NUMBER + " animals");
 	   else
 	   {
-		   AddAnimalDialog dial = new AddAnimalDialog(this, "Add an animal to aquarium");
+		  type= showFactoryDialog();
+		   AddAnimalDialog dial = new AddAnimalDialog(this, "Add an animal to aquarium",type);
 		   dial.setVisible(true);
 	   }
    }
-   
-   public void addAnimal(String animal, int sz, int hor, int ver, String c)
-   {
-	   Animal an = null;
-	   if(animal.equals("Elephant"))
-		   an = new Elephant(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Lion"))
-		   an = new Lion(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Turtle")) 
-		   an = new Turtle(sz, 0, 0, hor, ver, c, this);
-	   else if (animal.equals("Bear"))
-		   an = new Bear(sz, 0, 0, hor, ver, c, this);
-	   else 
-		   an = new Giraffe(sz, 0, 0, hor, ver, c, this);
-	   animals.add(an);
-	   an.start();
+   public String showFactoryDialog(){
+	   Object[] options = {"Herbivore", "Omnivore", "Carnivore"}; 
+	   int n = JOptionPane.showOptionDialog(frame, "Please choose animal factory", "Animal factory", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+	   switch(n)
+	   {
+	   		case 0:
+	   			factory=AbstractZooFactory.createAnimalFactory("Plant");
+	   			return "Plant";
+	   		case 1: // Cabbage
+	   			factory=AbstractZooFactory.createAnimalFactory("Mix");
+	   			return "Mix";
+	   		default: // Lettuce
+	   			factory=AbstractZooFactory.createAnimalFactory("Meat");
+	   			return "Meat";
+	   }
    }
-
+   @SuppressWarnings("null")
+public void addAnimal(String animal, int sz, int hor, int ver, String c)
+   {
+	   Animal an = factory.produceAnimal(animal);
+	   an.setter(sz, 0, 0, hor, ver, c, this);
+	   animals.add(an);
+	   Future<?> task = ((ExecutorService)threadPool).submit(an);
+	   an.setFuture(task);
+	   an.addObserver(this.Controller);
+	   //an.start();
+   }
+   public void addAnimal(Animal animal)
+   {
+	   if(animals.size()>5){animal.setRun(false);} //fixing the option that if animal in wait mode and boolean isRun equal's to true , then when you trying to "Clear" , it's will clear them instead of resuming "FALSE" one.
+	   animals.add(animal);
+	   task = ((ExecutorService)threadPool).submit(animal);
+	   animal.setFuture(task);
+	   animal.addObserver(this.Controller);
+   }
 	public void start()
 	{
 	    for(Animal an : animals)
@@ -201,14 +268,20 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 
    synchronized public void clear()
    {
-	   for(Animal an : animals)
-	    an.interrupt();
-	   animals.clear();
-	   Food = EFoodType.NOTFOOD;
-	   forFood = null;
+	   int j=animals.size();
+	   for(int i =0; i <j;i++){
+		   for(Animal an : animals){
+			   if(an.isRunning()){
+				   an.interrupt();
+				   animals.remove(an);
+				   break;}} 
+	   }
+	   //Food = EFoodType.NOTFOOD;
+	  // forFood = null;
 	   totalCount = 0;
 	   repaint();
    }
+
 
    synchronized public void preyEating(Animal predator, Animal prey)
    {
@@ -224,14 +297,14 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		   int n = JOptionPane.showOptionDialog(frame, "Please choose food", "Food for animals", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
 		   switch(n)
 		   {
-		   		case 0: //Meat
+		   		case 0: // Meat
 		   			Food = EFoodType.MEAT;
 		   			break;
-		   		case 1: //Cabbage
+		   		case 1: // Cabbage
 		   			Food = EFoodType.VEGETABLE;
 		   			forFood = new Cabbage(this);
 		   			break;
-		   		default: //Lettuce
+		   		default: // Lettuce
 		   			Food = EFoodType.VEGETABLE;
 		   			forFood = new Lettuce(this);
 		   			break;
@@ -274,7 +347,9 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 	      isTableVisible = true;
 	   }
 	   else
+	   {
 		   isTableVisible = false;
+	   }
 	   scrollPane.setVisible(isTableVisible);
        repaint();
    }
@@ -283,28 +358,8 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
    { 
 	  for(Animal an : animals)
 		  an.interrupt();
-	  controller.interrupt();
+	  //controller.interrupt();
       System.exit(0);
-   }
-   
-   public void decorate()
-   {
-	   
-   }
-   
-   public void duplicate()
-   {
-	   
-   }
-   
-   public void saveState()
-   {
-	   
-   }
-   
-   public void restoreState()
-   {
-	   
    }
    
    public void actionPerformed(ActionEvent e)
@@ -321,19 +376,92 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 		addFood();
 	else if(e.getSource() == b_num[5]) //Info
 		info();
-	else if(e.getSource() == b_num[6]) //Decorate
-		decorate();
-	else if(e.getSource() == b_num[7]) //Duplicate
-		duplicate();
-	else if(e.getSource() == b_num[8]) //Save state
-		saveState();
-	else if(e.getSource() == b_num[9]) //Restore state
-		restoreState();
-	else if(e.getSource() == b_num[10]) //Exit
-		destroy();
-   }
+	else if(e.getSource()==b_num2[0]){
+		checkDecorate();
+	}
+	else if(e.getSource()==b_num2[1]){
+		new DuplicateDialog (this).setVisible(true);
+	}
+	else if(e.getSource()==b_num2[2]){	
+		//save status
+		   Object[] options = {"State 1", "State 2", "State 3","Cancel"}; 
+		   int n = JOptionPane.showOptionDialog(frame, "Please choose state for restore", "Saved states", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[3]);
+		   switch(n)
+		   {
+		   		case 0:
+		   	         caretaker = new Caretaker();
+		   	         originator = new originator();
+		   	          food_animals= new CopyZooPanel(animals,Food);
+		   	         originator.setState(food_animals);
+		   	         caretaker.addMemento(originator.save());
+		   	         caretaker.getMemento();
 
-	public void run()
+		   }
+        
+	}
+	else if(e.getSource()==b_num2[3]){		
+		restore();
+	}	
+	else if(e.getSource()==b_num2[4]){
+		destroy();
+	}		
+   }
+   synchronized public  void restore(){
+	   clear();
+	   clear();
+       originator.restore( caretaker.getMemento() );
+	   Food=food_animals.getFood();
+	   //int size=animals.size();
+	   int size=food_animals.getAnimals().size();
+       System.out.println("size copy: "+size);
+       System.out.println("size orginal: "+animals.size());
+
+	   for(int i=0;i<size;i++)
+	   {
+	       System.out.println("Trying to copy: "+i);
+	       addAnimal(food_animals.getAnimals().get(i));
+	   }
+       System.out.println("Orginal SIZE:"+animals.size());
+   }
+   
+   //this function fill the combo box with the existing animals  , becuase two classes using same function we are seperate them, for example animal can be decorated just if it's color "Natural".
+   public void fillComboBox(JComboBox list, String text){
+	   if(text=="Natural"){
+	   	for(int i=0;i<animals.size();i++){
+	   		if(animals.get(i).getColor()=="Natural"){	   			
+			list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
+	     	}
+	   }
+	   else if (text=="All"){
+		   	for(int i=0;i<animals.size();i++){
+				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}	     	 }
+   }
+   
+   public Animal getAnimal(int index){
+	   if(index>=0){return animals.get(index);}
+	   else return null;
+   }
+   
+   
+   public void checkDecorate(){
+	   boolean flag=false;
+	   for(Animal an : animals)
+	   {
+		   if(an.getColor()=="Natural")
+			   flag=true;	//at least one animal that can be decorated.		   
+	   }
+	   if(flag==true){
+		   //open dialog.   
+		   decorator dDialog=new decorator(this);
+		   dDialog.setVisible(true);
+
+	   }
+	   else{
+		   JOptionPane.showMessageDialog(this, "You have not animals for decoration");
+
+	   }
+   }
+	/*public void run()
 	{
 		while(true)
 		{
@@ -372,7 +500,7 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 				return;
 			}
 		}
-	}
+	}*/
 
 	public boolean isChange()
 	{
@@ -387,4 +515,40 @@ public class ZooPanel extends JPanel implements ActionListener, Runnable
 	    }
 		return rc;
 	}
+	public void eatAn(){
+		boolean prey_eaten = false;
+		synchronized(this) {
+			for(Animal predator : animals) {
+				for(Animal prey : animals) {
+					if(predator != prey && predator.getDiet().canEat(prey) && predator.getWeight()/prey.getWeight() >= 2 &&
+					   (Math.abs(predator.getLocation().getX() - prey.getLocation().getX()) < prey.getSize()) &&
+					   (Math.abs(predator.getLocation().getY() - prey.getLocation().getY()) < prey.getSize())) {
+							preyEating(predator,prey);
+							System.out.print("The "+predator+" cought up the "+prey+" ==> ");
+							prey.interrupt();
+							animals.remove(prey);
+							repaint();
+							//JOptionPane.showMessageDialog(frame, ""+prey+" killed by "+predator);
+							prey_eaten = true;
+							break;
+					}
+				}
+				if(prey_eaten)
+					break;
+			}
+		}
+	} 
+    public static ZooPanel getInstance(ZooFrame f){
+	
+    	if(instance ==null)
+    		synchronized(ZooPanel.class)
+    		{
+    			if(instance==null)
+    				instance=new ZooPanel(f);
+    		}
+    	return instance;
+    }	
+	
+	
+	
 } //class ZooPanel extends JPanel implements ActionListener, Runnable
