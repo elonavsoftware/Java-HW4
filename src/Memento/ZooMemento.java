@@ -1,5 +1,6 @@
 package Memento;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 
 import animals.Animal;
@@ -19,3 +20,8 @@ public class ZooMemento {
 	        return zoo;
 	    }  
 	}
+=======
+public class ZooMemento {
+	
+}
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git

@@ -14,7 +14,11 @@ public class ColoredAnimalDecorator implements ColoredAnimal{
 	@Override
 	public void PaintAnimal(String color) {
 		// TODO Auto-generated method stub
+<<<<<<< HEAD
 		animal.PaintAnimal(color);
+=======
+		//animal.PaintAnimal(color);
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 		Animal an =((Animal)animal);
 		an.setColor(color);
 		String nm=null;

@@ -4,7 +4,15 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+<<<<<<< HEAD
+=======
+import java.util.Observable;
+import java.util.concurrent.Future;
+
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 import javax.imageio.ImageIO;
+
+import decoration.ColoredAnimal;
 import diet.IDiet;
 import food.EFoodType;
 import food.IEdible;
@@ -20,7 +28,11 @@ import mobility.Point;
  *
  */
 
+<<<<<<< HEAD
 le, IAnimalBehavior, Runnable
+=======
+public abstract class  extends Observable implements Cloneable, IEdible,ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 {
 
 	protected final int EAT_DISTANCE = 5;
@@ -47,9 +59,49 @@ le, IAnimalBehavior, Runnable
 	protected int cor_x1, cor_x2, cor_x3, cor_x4, cor_x5, cor_x6;
 	protected int cor_y1, cor_y2, cor_y3, cor_y4, cor_y5, cor_y6;
 	protected int cor_w, cor_h;
+<<<<<<< HEAD
 	
 	
 	public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
+=======
+	protected boolean isRun= false;
+	protected Future task;
+	protected Point location;
+	public Animal()
+	{
+		this.location=new Point(0,0);
+		//super(new Point(0,0));
+	}
+	
+	public Point getLocation() { return location; }
+	public boolean setLocation(Point newLocation)
+	{
+		this.location = newLocation;
+		return true;
+	}
+	
+	public void setRun(boolean res){
+		this.isRun=res;
+	}
+	public void init(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p){
+		name = new String(nm);
+		size = sz;
+		weight = w;
+		horSpeed = hor;
+		verSpeed = ver;
+		col = c;
+		pan = p;
+		x_dir = 1;
+		y_dir = 1;
+		cor_x1 = cor_x3 = cor_x5 = cor_x6 = 0;
+		cor_y1 = cor_y3 = cor_y5 = cor_y6 = 0;
+		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
+		cor_w = cor_h = size;
+		
+		coordChanged = false;
+	}
+	/*public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	{
 		super(new Point(0, 0));
 		name = new String(nm);
@@ -85,11 +137,40 @@ le, IAnimalBehavior, Runnable
 	synchronized public void setSuspend() { threadSuspended = true; }
 	synchronized public void setResume() { threadSuspended = false; notify(); }
 	synchronized public boolean getChanges(){ return coordChanged; }
+<<<<<<< HEAD
 	synchronized public void setChanges(boolean state){ coordChanged = state; }	 
+=======
+	synchronized public void setChanges(boolean state){ coordChanged = state; }	
+
+	abstract public void setter(int s,int x, int y, int h, int v, String c, ZooPanel p);
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	public String getColor() { return col; }
+<<<<<<< HEAD
 	public void start() { thread.start(); }
 	public void interrupt() { thread.interrupt(); }
 	
+=======
+	//public void start() { thread.start(); }
+	public void interrupt() { 
+		  isRun = false;       // to stop thread of animal
+		   //notify();                 // this can help if an animal is in state “wait”
+		   task.cancel(true); // to remove thread of animal from Threadpool
+	}
+	public void setFuture(Future _task)
+	{
+		this.task=_task;
+	}
+	public boolean isRunning() { return isRun; }
+	
+	//added method setColor at 05:24 7/6/17 by @Mahdi Asali
+	public void setColor(String _col){this.col=_col;}
+	
+	
+	//didnt understand why to add this?!?!?
+	@Override
+	public void PaintAnimal(String color) {
+	}
+>>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	public void loadImages(String nm)
 	{
 		 switch(getColor())
@@ -224,11 +305,23 @@ le, IAnimalBehavior, Runnable
 		    	if(cor_y4 != -1)
 		    		location.setY(cor_y4);
 		    }
-
- 		    setChanges(true);
+ 		    //setChanges(true);		    
+ 		    this.setChanged();
+ 		    this.notifyObservers();
+ 		    
       }
    }
- 
+    
+    public Object clone() {
+        Object clone = null;
+        try {
+           clone = super.clone();
+        } catch (CloneNotSupportedException e) {
+           e.printStackTrace();
+        }
+        return clone;
+     }
+    
     public void drawObject(Graphics g)
     {
  		if(x_dir == 1) //an animal goes to right side
