@@ -8,12 +8,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import Factory.AbstractZooFactory;
-<<<<<<< HEAD
 import Memento.Caretaker;
 import Memento.CopyZooPanel;
 import Memento.originator;
-=======
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 import ZooObserverPackage.ZooObserver;
 import animals.Animal;
 import animals.Bear;
@@ -253,11 +250,7 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
    {
 	   if(animals.size()>5){animal.setRun(false);} //fixing the option that if animal in wait mode and boolean isRun equal's to true , then when you trying to "Clear" , it's will clear them instead of resuming "FALSE" one.
 	   animals.add(animal);
-<<<<<<< HEAD
 	   task = ((ExecutorService)threadPool).submit(animal);
-=======
-	   Future<?> task = ((ExecutorService)threadPool).submit(animal);
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	   animal.setFuture(task);
 	   animal.addObserver(this.Controller);
    }
@@ -390,7 +383,6 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		new DuplicateDialog (this).setVisible(true);
 	}
 	else if(e.getSource()==b_num2[2]){	
-<<<<<<< HEAD
 		//save status
 		   Object[] options = {"State 1", "State 2", "State 3","Cancel"}; 
 		   int n = JOptionPane.showOptionDialog(frame, "Please choose state for restore", "Saved states", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[3]);
@@ -403,49 +395,7 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		   	         originator.setState(food_animals);
 		   	         caretaker.addMemento(originator.save());
 		   	         caretaker.getMemento();
-=======
-	}
-	else if(e.getSource()==b_num2[3]){		
-	}	
-	else if(e.getSource()==b_num2[4]){
-		destroy();
-	}		
-   }
-   
-   
-   //this function fill the combo box with the existing animals  , becuase two classes using same function we are seperate them, for example animal can be decorated just if it's color "Natural".
-   public void fillComboBox(JComboBox list, String text){
-	   if(text=="Natural"){
-	   	for(int i=0;i<animals.size();i++){
-	   		if(animals.get(i).getColor()=="Natural"){	   			
-			list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
-	     	}
-	   }
-	   else if (text=="All"){
-		   	for(int i=0;i<animals.size();i++){
-				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}	     	 }
-   }
-   
-   public Animal getAnimal(int index){
-	   if(index>=0){return animals.get(index);}
-	   else return null;
-   }
-   
-   
-   public void checkDecorate(){
-	   boolean flag=false;
-	   for(Animal an : animals)
-	   {
-		   if(an.getColor()=="Natural")
-			   flag=true;	//at least one animal that can be decorated.		   
-	   }
-	   if(flag==true){
-		   //open dialog.   
-		   decorator dDialog=new decorator(this);
-		   dDialog.setVisible(true);
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 
-<<<<<<< HEAD
 		   }
         
 	}
@@ -505,8 +455,6 @@ public void addAnimal(String animal, int sz, int hor, int ver, String c)
 		   decorator dDialog=new decorator(this);
 		   dDialog.setVisible(true);
 
-=======
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	   }
 	   else{
 		   JOptionPane.showMessageDialog(this, "You have not animals for decoration");

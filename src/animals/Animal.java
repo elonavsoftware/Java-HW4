@@ -4,12 +4,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-<<<<<<< HEAD
-=======
 import java.util.Observable;
 import java.util.concurrent.Future;
 
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 import javax.imageio.ImageIO;
 
 import decoration.ColoredAnimal;
@@ -28,17 +25,8 @@ import mobility.Point;
  *
  */
 
-<<<<<<< HEAD
-le, IAnimalBehavior, Runnable
-=======
-public abstract class  extends Observable implements Cloneable, IEdible,ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
+public abstract class Animal extends Observable implements Cloneable, IEdible,ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
 {
-
-	protected final int EAT_DISTANCE = 5;
-	private IDiet diet;
-	protected String name;
-	private doub{
 
 	protected final int EAT_DISTANCE = 5;
 	private IDiet diet;
@@ -49,7 +37,7 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 	protected int horSpeed;
 	protected int verSpeed;
 	protected boolean coordChanged;
-	protected Thread thread;
+	
 	protected int x_dir;
 	protected int y_dir;
 	protected int eatCount;
@@ -59,11 +47,6 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 	protected int cor_x1, cor_x2, cor_x3, cor_x4, cor_x5, cor_x6;
 	protected int cor_y1, cor_y2, cor_y3, cor_y4, cor_y5, cor_y6;
 	protected int cor_w, cor_h;
-<<<<<<< HEAD
-	
-	
-	public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
-=======
 	protected boolean isRun= false;
 	protected Future task;
 	protected Point location;
@@ -76,7 +59,7 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 	public Point getLocation() { return location; }
 	public boolean setLocation(Point newLocation)
 	{
-		this.location = newLocation;
+		this.location = new Point(newLocation.getX(),newLocation.getY());
 		return true;
 	}
 	
@@ -101,7 +84,6 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 		coordChanged = false;
 	}
 	/*public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	{
 		super(new Point(0, 0));
 		name = new String(nm);
@@ -118,8 +100,8 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
 		cor_w = cor_h = size;
 		coordChanged = false;
-		thread = new Thread(this);
-	}	
+		
+	}	*/
 	
 	public EFoodType getFoodtype() { return EFoodType.MEAT;	}	
 	public IDiet getDiet() { return diet; }
@@ -137,19 +119,10 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 	synchronized public void setSuspend() { threadSuspended = true; }
 	synchronized public void setResume() { threadSuspended = false; notify(); }
 	synchronized public boolean getChanges(){ return coordChanged; }
-<<<<<<< HEAD
-	synchronized public void setChanges(boolean state){ coordChanged = state; }	 
-=======
 	synchronized public void setChanges(boolean state){ coordChanged = state; }	
 
 	abstract public void setter(int s,int x, int y, int h, int v, String c, ZooPanel p);
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	public String getColor() { return col; }
-<<<<<<< HEAD
-	public void start() { thread.start(); }
-	public void interrupt() { thread.interrupt(); }
-	
-=======
 	//public void start() { thread.start(); }
 	public void interrupt() { 
 		  isRun = false;       // to stop thread of animal
@@ -170,7 +143,6 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 	@Override
 	public void PaintAnimal(String color) {
 	}
->>>>>>> branch 'master' of https://github.com/elonavsoftware/Java-HW4.git
 	public void loadImages(String nm)
 	{
 		 switch(getColor())
@@ -212,7 +184,8 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
 
     public void run() 
     {
-       while (true) 
+    	isRun=true;
+       while (isRun) 
        {
     	   try 
            {
@@ -315,7 +288,7 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
     public Object clone() {
         Object clone = null;
         try {
-           clone = super.clone();
+           clone = super.clone();           
         } catch (CloneNotSupportedException e) {
            e.printStackTrace();
         }
@@ -334,4 +307,5 @@ public abstract class  extends Observable implements Cloneable, IEdible,ColoredA
     {
     	return "[" + getName() + ": weight=" + weight + ", color =" + col + "]";
     }
+
 } //abstract class Animal extends Mobile implements IEdible, IDrawable, IAnimalBehavior, Runnable
