@@ -1,5 +1,6 @@
 package plants;
 
+import graphics.ZooFrame;
 import graphics.ZooPanel;
 
 /**
@@ -11,14 +12,28 @@ import graphics.ZooPanel;
 public class Cabbage extends Plant
 {
 	ZooPanel mypanel;
-	
+	static private volatile Cabbage instance = null; 
 	/**
 	 * Cabbage constructor
 	 * @param mypan
 	 */
-	public Cabbage(ZooPanel mypan)
+
+	private Cabbage(ZooPanel mypan)
 	{	
 		super(mypan);
 		this.loadImages("cabbage.png");
 	}
+	public  void restore(){
+		this.loadImages("cabbage.png");
+	}
+    public static Cabbage getInstance(ZooPanel z){
+    	
+    	if(instance ==null)
+    		synchronized(ZooPanel.class)
+    		{
+    			if(instance==null)
+    				instance=new Cabbage(z);
+    		}
+    	return instance;
+    }	
 } //class Cabbage extends Plant

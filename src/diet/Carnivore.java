@@ -5,14 +5,13 @@ import food.EFoodType;
 import food.IEdible;
 
 /**
- * Carnivore class
+ * Carnivore class, implements IDiet
  * @author Mahdi Asali
  *
  */
 
 public class Carnivore implements IDiet
 {
-	
 	/*
 	 * (non-Javadoc)
 	 * 

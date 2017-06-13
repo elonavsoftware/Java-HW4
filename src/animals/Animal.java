@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.concurrent.Future;
-
 import javax.imageio.ImageIO;
-
 import decoration.ColoredAnimal;
 import diet.IDiet;
 import food.EFoodType;
@@ -16,7 +14,6 @@ import food.IEdible;
 import graphics.IAnimalBehavior;
 import graphics.IDrawable;
 import graphics.ZooPanel;
-import mobility.Mobile;
 import mobility.Point;
 
 /**
@@ -25,9 +22,8 @@ import mobility.Point;
  *
  */
 
-public abstract class Animal extends Observable implements Cloneable, IEdible,ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
+public abstract class Animal extends Observable implements Cloneable, IEdible, ColoredAnimal, IDrawable, IAnimalBehavior, Runnable
 {
-
 	protected final int EAT_DISTANCE = 5;
 	private IDiet diet;
 	protected String name;
@@ -37,7 +33,6 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 	protected int horSpeed;
 	protected int verSpeed;
 	protected boolean coordChanged;
-	
 	protected int x_dir;
 	protected int y_dir;
 	protected int eatCount;
@@ -63,29 +58,12 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 		return true;
 	}
 	
-	public void setRun(boolean res){
-		this.isRun=res;
-	}
-	public void init(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p){
-		name = new String(nm);
-		size = sz;
-		weight = w;
-		horSpeed = hor;
-		verSpeed = ver;
-		col = c;
-		pan = p;
-		x_dir = 1;
-		y_dir = 1;
-		cor_x1 = cor_x3 = cor_x5 = cor_x6 = 0;
-		cor_y1 = cor_y3 = cor_y5 = cor_y6 = 0;
-		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
-		cor_w = cor_h = size;
-		
-		coordChanged = false;
-	}
-	/*public Animal(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
+	public void setRun(boolean res)
 	{
-		super(new Point(0, 0));
+		this.isRun = res;
+	}
+	public void init(String nm, int sz, int w, int hor, int ver, String c, ZooPanel p)
+	{
 		name = new String(nm);
 		size = sz;
 		weight = w;
@@ -99,13 +77,13 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 		cor_y1 = cor_y3 = cor_y5 = cor_y6 = 0;
 		cor_x2 = cor_y2 = cor_x4 = cor_y4 = -1;
 		cor_w = cor_h = size;
-		coordChanged = false;
 		
-	}	*/
+		coordChanged = false;
+	}
 	
-	public EFoodType getFoodtype() { return EFoodType.MEAT;	}	
+	public EFoodType getFoodtype() { return EFoodType.MEAT; }	
 	public IDiet getDiet() { return diet; }
-	public String getName() { return this.name;	}
+	public String getName() { return this.name; }
 	public double getWeight() {	return this.weight;	}
 	public void setWeight(double w) { weight = w; }
 	protected void setDiet(IDiet diet) { this.diet = diet;}
@@ -120,29 +98,24 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 	synchronized public void setResume() { threadSuspended = false; notify(); }
 	synchronized public boolean getChanges(){ return coordChanged; }
 	synchronized public void setChanges(boolean state){ coordChanged = state; }	
-
 	abstract public void setter(int s,int x, int y, int h, int v, String c, ZooPanel p);
 	public String getColor() { return col; }
-	//public void start() { thread.start(); }
-	public void interrupt() { 
-		  isRun = false;       // to stop thread of animal
-		   //notify();                 // this can help if an animal is in state “wait”
-		   task.cancel(true); // to remove thread of animal from Threadpool
+	public void interrupt()
+	{ 
+		  isRun = false; //to stop thread of animal
+		  task.cancel(true);  //to remove thread of animal from Threadpool
 	}
 	public void setFuture(Future _task)
 	{
-		this.task=_task;
+		this.task =_task;
 	}
 	public boolean isRunning() { return isRun; }
 	
 	//added method setColor at 05:24 7/6/17 by @Mahdi Asali
-	public void setColor(String _col){this.col=_col;}
-	
-	
-	//didnt understand why to add this?!?!?
+	public void setColor(String _col) { this.col=_col; }
+
 	@Override
-	public void PaintAnimal(String color) {
-	}
+	public void PaintAnimal(String color) {}
 	public void loadImages(String nm)
 	{
 		 switch(getColor())
@@ -184,7 +157,7 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 
     public void run() 
     {
-    	isRun=true;
+       isRun = true;
        while (isRun) 
        {
     	   try 
@@ -199,7 +172,7 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
            } 
     	   catch (InterruptedException e) 
            {
-    		   System.out.println(getName()+ " dead...");
+    		   System.out.println(getName() + " dead...");
     		   return;
            }
                       
@@ -209,7 +182,7 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
            		double newHorSpeed = oldSpead * (location.getX() - pan.getWidth()/2) / (Math.sqrt(Math.pow(location.getX() - pan.getWidth() / 2, 2) + Math.pow(location.getY() - pan.getHeight() / 2, 2)));
            		double newVerSpeed = oldSpead * (location.getY() - pan.getHeight()/2) / (Math.sqrt(Math.pow(location.getX() - pan.getWidth() / 2, 2) + Math.pow(location.getY() - pan.getHeight() / 2, 2)));
               	int v = 1;
-                if(newVerSpeed<0)
+                if(newVerSpeed < 0)
                 {
                 	v = -1;
                 	newVerSpeed = -newVerSpeed;
@@ -218,13 +191,13 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
               		newVerSpeed = 10;
               	else if(newVerSpeed < 1)
               	{
-              	   if(location.getY() != pan.getHeight() / 2)
+              	   if(location.getY() != pan.getHeight()/2)
               		newVerSpeed = 1;   
               	   else
               		newVerSpeed = 0;  
               	}
               	int h = 1;
-                if(newHorSpeed<0)
+                if(newHorSpeed < 0)
                 {
                 	h = -1;
                 	newHorSpeed = -newHorSpeed;
@@ -233,18 +206,18 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
               		newHorSpeed = 10;
               	else if(newHorSpeed < 1)
               	{
-              	   if(location.getX() != pan.getWidth() / 2)
+              	   if(location.getX() != pan.getWidth()/2)
               		newHorSpeed = 1;   
               	   else
               		newHorSpeed = 0;  
               	}
                	location.setX((int)(location.getX() - newHorSpeed * h));
                	location.setY((int)(location.getY() - newVerSpeed * v));
-              	if(location.getX()<pan.getWidth() / 2)
+              	if(location.getX() < pan.getWidth()/2)
               		x_dir = 1;
               	else
               		x_dir = -1;
-              	if((Math.abs(location.getX() - pan.getWidth() / 2) < EAT_DISTANCE) && (Math.abs(location.getY() - pan.getHeight() / 2) < EAT_DISTANCE))
+              	if((Math.abs(location.getX() - pan.getWidth()/2) < EAT_DISTANCE) && (Math.abs(location.getY() - pan.getHeight()/2) < EAT_DISTANCE))
               		pan.eatFood(this);
            }
            else
@@ -277,19 +250,22 @@ public abstract class Animal extends Observable implements Cloneable, IEdible,Co
 		    	y_dir = 1;
 		    	if(cor_y4 != -1)
 		    		location.setY(cor_y4);
-		    }
- 		    //setChanges(true);		    
+		    }    
  		    this.setChanged();
  		    this.notifyObservers();
  		    
       }
    }
     
-    public Object clone() {
+    public Object clone()
+    {
         Object clone = null;
-        try {
+        try
+        {
            clone = super.clone();           
-        } catch (CloneNotSupportedException e) {
+        }
+        catch (CloneNotSupportedException e)
+        {
            e.printStackTrace();
         }
         return clone;

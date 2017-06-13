@@ -5,14 +5,13 @@ import food.EFoodType;
 import food.IEdible;
 
 /**
- * Herbivore class
+ * Herbivore class, implements IDiet
  * @author Mahdi Asali
  *
  */
 
 public class Herbivore implements IDiet
 {
-
 	@Override
 	public boolean canEat(IEdible food) { return (food.getFoodtype() == EFoodType.VEGETABLE); }
 

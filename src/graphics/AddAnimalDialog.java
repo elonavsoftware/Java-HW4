@@ -27,20 +27,19 @@ public class AddAnimalDialog extends JDialog implements ItemListener, ActionList
     private JRadioButton[] rb1;
     private ZooPanel ap;
     private String type;
-    public AddAnimalDialog(ZooPanel pan, String title,String _type)
+    public AddAnimalDialog(ZooPanel pan, String title, String _type)
     {
     	super(new JFrame(), title,true);
     	
-    	
     	//init array of animals
-    	if (_type=="Meat")
+    	if (_type == "Meat")
     		animals=new String[]{"Lion"};
-    	else if(_type == "Mix")
+    	else if (_type == "Mix")
     		animals=new String[]{"Bear"};
     	else 
-    		animals = new String[]{"Elephant","Giraffe", "Turtle"};
+    		animals = new String[]{"Elephant", "Giraffe", "Turtle"};
     	ap = pan;
-    	setSize(550,300);
+    	setSize(550, 300);
 	
 		setBackground(new Color(100, 230, 255));
 		p1 = new JPanel();
@@ -133,6 +132,7 @@ public class AddAnimalDialog extends JDialog implements ItemListener, ActionList
 		add("Center", p5);
 		add("South" , p3);
     }
+    
     public void itemStateChanged(ItemEvent e)
     {
 		for(int i = 0; i < rb.length; i++)
@@ -149,6 +149,7 @@ public class AddAnimalDialog extends JDialog implements ItemListener, ActionList
 		    	break;
 	        }
     }
+    
     public void actionPerformed(ActionEvent e)
     {
  		if(e.getSource() == ok)

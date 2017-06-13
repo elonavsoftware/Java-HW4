@@ -5,7 +5,7 @@ import food.EFoodType;
 import food.IEdible;
 
 /**
- * Omnivore class
+ * Omnivore class, implements IDiet
  * @author Elon Avisror
  *
  */
