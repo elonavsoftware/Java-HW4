@@ -57,6 +57,7 @@ public class ZooPanel extends JPanel implements ActionListener
    static private volatile ZooPanel instance=null;
    private ArrayList<ZooMemento> mementos;
    private Future<?> task;
+   
    private ZooPanel(ZooFrame f)
    {
 	   Controller = new ZooObserver(this);
@@ -166,6 +167,10 @@ public class ZooPanel extends JPanel implements ActionListener
 	   repaint();
    }
    
+   /**
+    * 
+    * @return
+    */
    synchronized public EFoodType checkFood() { return Food; }
 
    /**
@@ -188,7 +193,13 @@ public class ZooPanel extends JPanel implements ActionListener
 		   System.out.println("The " + an.getName() + " with " + an.getColor() + " color and size " + an.getSize() + " missed food.");
    }
 
+   /**
+    * 
+    * @return
+    */
+   @SuppressWarnings("rawtypes")
    public ArrayList getAnimals() { return animals; }
+   
    public void addDialog()
    {
 	   String type;
@@ -201,6 +212,11 @@ public class ZooPanel extends JPanel implements ActionListener
 		   dial.setVisible(true);
 	   }
    }
+   
+   /**
+    * 
+    * @return
+    */
    public String showFactoryDialog()
    {
 	   Object[] options = {"Herbivore", "Omnivore", "Carnivore"}; 
@@ -218,7 +234,7 @@ public class ZooPanel extends JPanel implements ActionListener
 	   			return "Meat";
 	   }
    }
-   @SuppressWarnings("null")
+   
    public void addAnimal(String animal, int sz, int hor, int ver, String c)
    {
 	   Animal an = factory.produceAnimal(animal);
@@ -229,6 +245,7 @@ public class ZooPanel extends JPanel implements ActionListener
 	   an.addObserver(this.Controller);
 	   //an.start();
    }
+   
    public void addAnimal(Animal animal)
    {
 	   if(animals.size()>5){animal.setRun(false);} //fixing the option that if animal in wait mode and boolean isRun equal's to true , then when you trying to "Clear" , it's will clear them instead of resuming "FALSE" one.
@@ -237,16 +254,17 @@ public class ZooPanel extends JPanel implements ActionListener
 	   animal.setFuture(task);
 	   animal.addObserver(this.Controller);
    }
-	public void start()
-	{
-	    for(Animal an : animals)
-	    	an.setResume();
+   
+   public void start()
+   {
+	   for(Animal an : animals)
+		   an.setResume();
    }
 
- 	public void stop()
- 	{
-	    for(Animal an : animals)
-	    	an.setSuspend();
+   public void stop()
+   {
+	   for(Animal an : animals)
+		   an.setSuspend();
    }
     synchronized public void clearMemento()
     {
@@ -392,7 +410,7 @@ public class ZooPanel extends JPanel implements ActionListener
 		destroy();
    }
    
-   synchronized public  void restore()
+   synchronized public void restore()
    {
 	   if(this.mementos.size() > 0)
 	   {
@@ -419,6 +437,7 @@ public class ZooPanel extends JPanel implements ActionListener
    }
    
    //this function fill the combo box with the existing animals  , becuase two classes using same function we are seperate them, for example animal can be decorated just if it's color "Natural".
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    public void fillComboBox(JComboBox list, String text)
    {
 	   if (text == "Natural"){
@@ -426,80 +445,51 @@ public class ZooPanel extends JPanel implements ActionListener
 	   {
 	   		if(animals.get(i).getColor() == "Natural")
 	   		{	   			
-	   			list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}
+	   			list.addItem((i + 1) + ".[" + animals.get(i).getName() + ":" + "running=" + animals.get(i).isRunning() + ",weight=" + animals.get(i).getWeight()+", color=" + animals.get(i).getColor() + "]");}
 	     	}
 	   }
 	   else if (text=="All")
 	   {
 		   	for(int i=0;i<animals.size();i++){
-				list.addItem((i+1)+".["+animals.get(i).getName()+":"+"running="+animals.get(i).isRunning()+",weight="+animals.get(i).getWeight()+", color="+animals.get(i).getColor()+"]");}	     	 }
+				list.addItem((i + 1) + ".[" + animals.get(i).getName() + ":"+"running=" + animals.get(i).isRunning() + ",weight=" + animals.get(i).getWeight() + ", color=" + animals.get(i).getColor() + "]");}
+	   }
    }
    
-   public Animal getAnimal(int index){
-	   if(index>=0){return animals.get(index);}
-	   else return null;
+   /**
+    * 
+    * @param index
+    * @return
+    */
+   public Animal getAnimal(int index)
+   {
+	   if(index >= 0)
+		   return animals.get(index);
+	   else
+		   return null;
    }
    
-   
-   public void checkDecorate(){
-	   boolean flag=false;
+   public void checkDecorate()
+   {
+	   boolean flag = false;
 	   for(Animal an : animals)
 	   {
 		   if(an.getColor()=="Natural")
-			   flag=true;	//at least one animal that can be decorated.		   
+			   flag = true; //at least one animal that can be decorated.		   
 	   }
-	   if(flag==true){
+	   if(flag == true)
+	   {
 		   //open dialog.   
 		   decorator dDialog=new decorator(this);
 		   dDialog.setVisible(true);
-
 	   }
-	   else{
+	   else
 		   JOptionPane.showMessageDialog(this, "You have not animals for decoration");
+   	}
 
-	   }
-   }
-	/*public void run()
-	{
-		while(true)
-		{
-			if(isChange())
-				repaint();
-			
-			boolean prey_eaten = false;
-			synchronized(this)
-			{
-				for(Animal predator : animals)
-				{
-					for(Animal prey : animals)
-					{
-						if(predator != prey && predator.getDiet().canEat(prey) && predator.getWeight()/prey.getWeight() >= 2 && (Math.abs(predator.getLocation().getX() - prey.getLocation().getX()) < prey.getSize()) && (Math.abs(predator.getLocation().getY() - prey.getLocation().getY()) < prey.getSize()))
-						{
-							preyEating(predator,prey);
-							System.out.print("The " + predator + " cought up the " + prey + " ==> ");
-							prey.interrupt();
-							animals.remove(prey);
-							repaint();
-							//JOptionPane.showMessageDialog(frame, ""+prey+" killed by "+predator);
-							prey_eaten = true;
-							break;
-						}
-					}
-					if(prey_eaten)
-						break;
-				}
-			}
-			try
-			{
-				Thread.sleep(1000/RESOLUTION);
-			}
-			catch (InterruptedException e)
-			{
-				return;
-			}
-		}
-	}*/
-
+   /**
+    * 
+    * @return
+    */
 	public boolean isChange()
 	{
 		boolean rc = false;
@@ -513,11 +503,16 @@ public class ZooPanel extends JPanel implements ActionListener
 	    }
 		return rc;
 	}
-	public void eatAn(){
+	
+	public void eatAn()
+	{
 		boolean prey_eaten = false;
-		synchronized(this) {
-			for(Animal predator : animals) {
-				for(Animal prey : animals) {
+		synchronized(this)
+		{
+			for(Animal predator : animals)
+			{
+				for(Animal prey : animals)
+				{
 					if(predator != prey && predator.getDiet().canEat(prey) && predator.getWeight()/prey.getWeight() >= 2 &&
 					   (Math.abs(predator.getLocation().getX() - prey.getLocation().getX()) < prey.getSize()) &&
 					   (Math.abs(predator.getLocation().getY() - prey.getLocation().getY()) < prey.getSize())) {
@@ -536,17 +531,20 @@ public class ZooPanel extends JPanel implements ActionListener
 			}
 		}
 	} 
-    public static ZooPanel getInstance(ZooFrame f){
+	/**
+	 * 
+	 * @param f
+	 * @return
+	 */
+    public static ZooPanel getInstance(ZooFrame f)
+    {
 	
-    	if(instance ==null)
+    	if(instance == null)
     		synchronized(ZooPanel.class)
     		{
-    			if(instance==null)
-    				instance=new ZooPanel(f);
+    			if(instance == null)
+    				instance = new ZooPanel(f);
     		}
     	return instance;
     }	
-	
-	
-	
 } //class ZooPanel extends JPanel implements ActionListener, Runnable

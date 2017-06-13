@@ -17,13 +17,35 @@ public class Point
 		this.x = x;
 		this.y = y;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public int getX() { return x; }
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public int getY() { return y; }
+	
+	/**
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public boolean setX(int x)
 	{
 		this.x = x;
 		return true;
 	}
+	
+	/**
+	 * 
+	 * @param y
+	 * @return
+	 */
 	public boolean setY(int y)
 	{
 		this.y = y;

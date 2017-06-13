@@ -22,13 +22,20 @@ public class Lettuce extends Plant
 		super(mypan);
 		this.loadImages("lettuce.png");
 	}
-    public static Lettuce getInstance(ZooPanel z){
+	
+	/**
+	 * 
+	 * @param z
+	 * @return
+	 */
+    public static Lettuce getInstance(ZooPanel z)
+    {
     	
-    	if(instance ==null)
+    	if(instance == null)
     		synchronized(ZooPanel.class)
     		{
-    			if(instance==null)
-    				instance=new Lettuce(z);
+    			if(instance == null)
+    				instance = new Lettuce(z);
     		}
     	return instance;
     }	

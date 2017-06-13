@@ -1,13 +1,18 @@
 package Memento;
 
 import java.util.ArrayList;
-
 import animals.Animal;
 import food.EFoodType;
-import food.IEdible;
-import graphics.*;
 import mobility.Point;
-public class ZooMemento {
+
+/**
+ * ZooMemento class
+ * @author Mahdi Asali
+ *
+ */
+
+public class ZooMemento
+{
 	   private EFoodType food;
 	   private int index;
 	   private ArrayList<Animal> animals;
@@ -21,13 +26,22 @@ public class ZooMemento {
 		   	this.food = fd;
 		   	this.index=_index;
 	   }
-	   public int getIndexofFood(){
-		   return index;
-	   }
-	   public ArrayList<Animal> getAnimalList(){
-		   return this.animals;
-	   }
-	   public EFoodType getFood(){
-		   return this.food;
-	   }
-}
+	   
+	   /**
+	    * 
+	    * @return
+	    */
+	   public int getIndexofFood() { return index; }
+	   
+	   /**
+	    * 
+	    * @return
+	    */
+	   public ArrayList<Animal> getAnimalList() { return this.animals; }
+	   
+	   /**
+	    * 
+	    * @return
+	    */
+	   public EFoodType getFood() { return this.food; }
+} //class ZooMemento
