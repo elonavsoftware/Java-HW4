@@ -36,6 +36,7 @@ public class ZooPanel extends JPanel implements ActionListener
    private static final int MAX_ANIMAL_NUMBER  = 10;
    private final String BACKGROUND_PATH = Animal.PICTURE_PATH + "savanna.jpg";
    private final String MEAT_PATH = Animal.PICTURE_PATH + "meat.gif";
+   @SuppressWarnings("unused")
    private final int RESOLUTION = 25; 
    private ZooFrame frame;
    private EFoodType Food;
@@ -530,7 +531,8 @@ public class ZooPanel extends JPanel implements ActionListener
 					break;
 			}
 		}
-	} 
+	}
+	
 	/**
 	 * 
 	 * @param f
@@ -540,11 +542,13 @@ public class ZooPanel extends JPanel implements ActionListener
     {
 	
     	if(instance == null)
+    	{
     		synchronized(ZooPanel.class)
     		{
     			if(instance == null)
     				instance = new ZooPanel(f);
     		}
+    	}
     	return instance;
     }	
 } //class ZooPanel extends JPanel implements ActionListener, Runnable
